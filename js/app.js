@@ -86,7 +86,20 @@ const App = (() => {
     // 4. Init theme
     initTheme();
 
-    // 5. Check if landing page was seen
+    // 5. Auth check — show auth screen if not logged in
+    setupAuth();
+    if (!Auth.isLoggedIn()) {
+      document.getElementById('auth-screen')?.classList.remove('hidden');
+      return; // Don't load app until logged in
+    }
+    document.getElementById('auth-screen')?.classList.add('hidden');
+
+    // 6. Continue app boot
+    await bootApp();
+  }
+
+  async function bootApp() {
+    // 5b. Check if landing page was seen
     const landingSeen = localStorage.getItem('kd_landing_seen');
     if (!landingSeen) {
       showLanding();
@@ -119,6 +132,55 @@ const App = (() => {
 
     // 11. Voice assistant FAB
     setupVoiceAssistant();
+  }
+
+  // ---- AUTH SETUP ---- //
+  function setupAuth() {
+    // Tab switching
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const isLogin = tab.dataset.tab === 'login';
+        document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+        document.getElementById('register-form').classList.toggle('hidden', isLogin);
+      });
+    });
+
+    // Login form
+    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const phone = document.getElementById('login-phone').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errEl = document.getElementById('login-error');
+      const result = Auth.login(phone, password);
+      if (result.success) {
+        errEl.classList.add('hidden');
+        document.getElementById('auth-screen')?.classList.add('hidden');
+        await bootApp();
+      } else {
+        errEl.textContent = result.message;
+        errEl.classList.remove('hidden');
+      }
+    });
+
+    // Register form
+    document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('register-name').value.trim();
+      const phone = document.getElementById('register-phone').value.trim();
+      const password = document.getElementById('register-password').value;
+      const errEl = document.getElementById('register-error');
+      const result = Auth.register(name, phone, password);
+      if (result.success) {
+        errEl.classList.add('hidden');
+        document.getElementById('auth-screen')?.classList.add('hidden');
+        await bootApp();
+      } else {
+        errEl.textContent = result.message;
+        errEl.classList.remove('hidden');
+      }
+    });
   }
 
   // ---- LANDING PAGE ---- //
@@ -621,6 +683,8 @@ const App = (() => {
       return `<span class="profile-status ${cls}"><span class="profile-status__dot"></span> ${label}</span>`;
     };
 
+    const user = Auth.getCurrentUser() || {};
+    
     view.innerHTML = `
       <!-- Profile Header -->
       <div class="profile-header">
@@ -630,7 +694,7 @@ const App = (() => {
             <circle cx="12" cy="7" r="4"/>
           </svg>
         </div>
-        <div class="profile-name">${p.name || 'Farmer'}</div>
+        <div class="profile-name">${user.name || 'Farmer'}</div>
         <div class="profile-welcome">Welcome back! Here's your farm dashboard.</div>
       </div>
 
@@ -646,14 +710,14 @@ const App = (() => {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Name
             </span>
-            <span class="profile-detail__value">${p.name || '—'}</span>
+            <span class="profile-detail__value">${user.name || p.name || '—'}</span>
           </div>
           <div class="profile-detail">
             <span class="profile-detail__label">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               Phone
             </span>
-            <span class="profile-detail__value">${p.phone || '—'}</span>
+            <span class="profile-detail__value">${user.phone || p.phone || '—'}</span>
           </div>
           <div class="profile-detail">
             <span class="profile-detail__label">
@@ -833,7 +897,20 @@ const App = (() => {
           </div>
         </div>
       </div>
+      
+      <div style="padding: 0 var(--sp-4) var(--sp-6) var(--sp-4);">
+        <button id="logout-btn" style="width:100%; padding:var(--sp-3); border-radius:var(--radius-lg); background:rgba(255,107,107,0.1); color:#ff6b6b; border:1px solid rgba(255,107,107,0.2); font-weight:600; cursor:pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="vertical-align:middle; margin-right:8px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout / लॉग आउट
+        </button>
+      </div>
     `;
+
+    // Logout handler
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+      Auth.logout();
+      window.location.reload();
+    });
 
     // Language change handler
     document.getElementById('settings-lang-select').addEventListener('change', async (e) => {
@@ -1019,6 +1096,7 @@ const App = (() => {
           </button>
         </div>
         <input type="file" accept="image/*" class="hidden-input" id="crop-file-input">
+        <button class="btn-secondary" id="crop-demo-scan" style="width:100%;margin-bottom:var(--sp-3)">🔬 Demo Scan (Test without camera)</button>
         <div id="crop-result-container"></div>
       </div>
 
@@ -1028,6 +1106,15 @@ const App = (() => {
           <div>
             <div class="ai-section__title">${I18n.t('voice_title')}</div>
             <div class="ai-section__subtitle">${I18n.t('voice_subtitle')}</div>
+          </div>
+        </div>
+        <div class="demo-qa-section">
+          <div class="demo-qa-title">💬 Try asking (Demo):</div>
+          <div class="demo-qa-grid" id="demo-qa-grid">
+            <button class="demo-qa-btn" data-q="गेहूं में पानी कब दें">🌾 गेहूं सिंचाई</button>
+            <button class="demo-qa-btn" data-q="टमाटर में रोग">🍅 टमाटर रोग</button>
+            <button class="demo-qa-btn" data-q="धान की बुवाई कब करें">🌾 धान बुवाई</button>
+            <button class="demo-qa-btn" data-q="जैविक खाद कैसे बनाएं">🌱 जैविक खाद</button>
           </div>
         </div>
         <div id="voice-chat-container" class="voice-chat"></div>
@@ -1054,6 +1141,28 @@ const App = (() => {
 
     // Voice button in AI tab
     document.getElementById('ai-voice-btn')?.addEventListener('click', openVoiceModal);
+
+    // Demo Q&A buttons
+    document.querySelectorAll('.demo-qa-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const query = btn.dataset.q;
+        const lang = I18n.getLang();
+        const response = GeminiAI.getMockVoiceResponse(query, lang);
+        addVoiceChatItem(query, response);
+        // Also speak it
+        if (Speech.isTTSSupported()) Speech.speak(response);
+      });
+    });
+
+    // Demo Scan button
+    document.getElementById('crop-demo-scan')?.addEventListener('click', async () => {
+      const container = document.getElementById('crop-result-container');
+      container.innerHTML = `<div class="ai-loading-card"><div class="ai-loading-card__spinner"></div><div class="ai-loading-card__text">${I18n.t('crop_analyzing')}</div></div>`;
+      // Simulate delay
+      await new Promise(r => setTimeout(r, 1500));
+      const result = GeminiAI.getMockDiseaseResult(I18n.getLang());
+      showCropResult(result, '');
+    });
   }
 
   async function loadAIInsights() {

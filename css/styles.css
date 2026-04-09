@@ -2435,7 +2435,172 @@ body {
 }
 
 /* ============================================================
-   21. RESPONSIVE
+   22. AUTH SCREEN
+   ============================================================ */
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.4s;
+}
+.auth-screen.hidden { display: none; }
+
+.auth-card {
+  width: 90%;
+  max-width: 380px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-8);
+  text-align: center;
+  animation: slide-up 0.5s var(--ease-spring);
+}
+
+.auth-card__logo img {
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-4);
+  animation: float 3s ease-in-out infinite;
+}
+
+.auth-card__title {
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  color: white;
+  margin-bottom: var(--sp-1);
+}
+
+.auth-card__subtitle {
+  font-size: var(--fs-sm);
+  color: rgba(255,255,255,0.6);
+  margin-bottom: var(--sp-6);
+}
+
+.auth-tabs {
+  display: flex;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  margin-bottom: var(--sp-6);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semi);
+  color: rgba(255,255,255,0.6);
+  transition: all var(--duration-normal);
+}
+.auth-tab.active {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: var(--sp-3); }
+.auth-form.hidden { display: none; }
+
+.auth-input-group {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3) var(--sp-4);
+  transition: border-color var(--duration-fast);
+}
+.auth-input-group:focus-within {
+  border-color: rgba(255,255,255,0.4);
+}
+.auth-input-group svg {
+  color: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+.auth-input-group input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: var(--fs-sm);
+  font-family: inherit;
+}
+.auth-input-group input::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+
+.auth-error {
+  font-size: var(--fs-xs);
+  color: #ff6b6b;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  background: rgba(255,107,107,0.1);
+  border-radius: var(--radius-sm);
+}
+.auth-error.hidden { display: none; }
+
+.auth-submit {
+  width: 100%;
+  padding: var(--sp-4);
+  background: linear-gradient(135deg, #52B788, #40916C);
+  color: white;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-bold);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-normal);
+  margin-top: var(--sp-2);
+}
+.auth-submit:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(82,183,136,0.3); }
+.auth-submit:active { transform: scale(0.97); }
+
+.auth-footer {
+  font-size: var(--fs-xs);
+  color: rgba(255,255,255,0.3);
+  margin-top: var(--sp-6);
+}
+
+/* ============================================================
+   23. DEMO VOICE Q&A BUTTONS
+   ============================================================ */
+.demo-qa-section {
+  margin-top: var(--sp-4);
+}
+.demo-qa-title {
+  font-size: var(--fs-xs);
+  color: var(--clr-text-muted);
+  margin-bottom: var(--sp-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--fw-semi);
+}
+.demo-qa-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.demo-qa-btn {
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--clr-secondary-light);
+  color: var(--clr-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semi);
+  transition: all var(--duration-fast);
+  white-space: nowrap;
+}
+.demo-qa-btn:hover {
+  background: var(--clr-secondary);
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   24. RESPONSIVE
    ============================================================ */
 @media (min-width: 480px) {
   .app-main {
@@ -2447,9 +2612,10 @@ body {
 }
 
 /* ============================================================
-   22. PRINT
+   25. PRINT
    ============================================================ */
 @media print {
-  .tab-bar, .app-header, .toast-container, .landing, .voice-fab { display: none !important; }
+  .tab-bar, .app-header, .toast-container, .landing, .voice-fab, .auth-screen { display: none !important; }
   .app-main { padding: 0; }
 }
+
