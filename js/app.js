@@ -99,20 +99,12 @@ const App = (() => {
   }
 
   async function bootApp() {
-    // 5b. Check if landing page was seen
-    const landingSeen = localStorage.getItem('kd_landing_seen');
-    if (!landingSeen) {
-      showLanding();
-    } else {
-      hideLanding();
-    }
-
     // 6. Check onboarding status
     const prefs = await KisanDB.get(KisanDB.STORES.preferences, 'onboarded');
     if (prefs && prefs.value) {
       hideOnboarding();
       await loadAppData();
-    } else if (landingSeen) {
+    } else {
       showOnboarding();
     }
 
@@ -127,11 +119,13 @@ const App = (() => {
     // 9. Render current language text
     renderStaticText();
 
-    // 10. Landing page CTA handlers
-    setupLanding();
-
     // 11. Voice assistant FAB
     setupVoiceAssistant();
+
+    // 12. Preload Whisper model in background (non-blocking)
+    Speech.preloadWhisper((info) => {
+      updateWhisperStatus(info);
+    });
   }
 
   // ---- AUTH SETUP ---- //
@@ -164,6 +158,16 @@ const App = (() => {
       }
     });
 
+    document.getElementById('demo-mode-btn')?.addEventListener('click', async () => {
+      const errEl = document.getElementById('login-error');
+      const result = Auth.login('admin', 'farmer123');
+      if (result.success) {
+        errEl.classList.add('hidden');
+        document.getElementById('auth-screen')?.classList.add('hidden');
+        await bootApp();
+      }
+    });
+
     // Register form
     document.getElementById('register-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -183,33 +187,7 @@ const App = (() => {
     });
   }
 
-  // ---- LANDING PAGE ---- //
-  function showLanding() {
-    const el = document.getElementById('landing');
-    if (el) el.classList.remove('hidden');
-  }
 
-  function hideLanding() {
-    const el = document.getElementById('landing');
-    if (el) el.classList.add('hidden');
-    localStorage.setItem('kd_landing_seen', 'true');
-  }
-
-  function setupLanding() {
-    const cta = document.getElementById('landing-cta');
-    const ctaBottom = document.getElementById('landing-cta-bottom');
-    const handler = () => {
-      hideLanding();
-      // Show onboarding if not yet onboarded
-      KisanDB.get(KisanDB.STORES.preferences, 'onboarded').then(prefs => {
-        if (!prefs || !prefs.value) {
-          showOnboarding();
-        }
-      });
-    };
-    if (cta) cta.addEventListener('click', handler);
-    if (ctaBottom) ctaBottom.addEventListener('click', handler);
-  }
 
   // ---- THEME TOGGLE ---- //
   function initTheme() {
@@ -1287,9 +1265,33 @@ const App = (() => {
     const container = document.getElementById('crop-result-container');
     if (!container) return;
     const isHealthy = (result.status || '').toLowerCase().includes('healthy') || (result.status || '').toLowerCase().includes('स्वस्थ');
-    const sevClass = (result.severity || '').toLowerCase().includes('severe') ? 'severe' : (result.severity || '').toLowerCase().includes('moderate') ? 'moderate' : 'mild';
+    const sevClass  = (result.severity || '').toLowerCase().includes('severe') ? 'severe' : (result.severity || '').toLowerCase().includes('moderate') ? 'moderate' : 'mild';
+
+    /* Source badge */
+    const sourceLabel = result.source === 'backend' ? '🧠 EfficientNetB4 AI'
+                      : result.source === 'gemini'  ? '✨ Gemini Vision AI'
+                      :                               '🔬 Demo Mode';
+    const sourceClass = result.source === 'backend' ? 'source-backend'
+                      : result.source === 'gemini'  ? 'source-gemini'
+                      :                               'source-demo';
+
+    /* Top-3 predictions from EfficientNet */
+    let topPredHtml = '';
+    if (result.top_predictions && result.top_predictions.length > 1) {
+      topPredHtml = `
+        <div class="crop-result__section-title">Top Predictions</div>
+        ${result.top_predictions.slice(0, 3).map(p => `
+          <div class="crop-top-pred">
+            <span class="crop-top-pred__label">${p.class || '—'}</span>
+            <div class="crop-top-pred__bar-wrap">
+              <div class="crop-top-pred__bar" style="width:${Math.min(p.confidence || 0, 100)}%"></div>
+            </div>
+            <span class="crop-top-pred__pct">${(p.confidence || 0).toFixed(1)}%</span>
+          </div>`).join('')}`;
+    }
+
     container.innerHTML = `
-      <div class="crop-preview"><img src="${imgUrl}" alt="Crop"></div>
+      ${imgUrl ? `<div class="crop-preview"><img src="${imgUrl}" alt="Crop"></div>` : ''}
       <div class="crop-result">
         <div class="crop-result__header">
           <span class="crop-result__badge ${isHealthy ? 'crop-result__badge--healthy' : 'crop-result__badge--diseased'}">${result.status || 'N/A'}</span>
@@ -1306,56 +1308,151 @@ const App = (() => {
   }
 
   // ---- VOICE ASSISTANT ---- //
+  // Track whether we are currently recording (to toggle button)
+  let _voiceRecording = false;
+  let _voiceListenHandle = null; // { promise, stop }
+
   function setupVoiceAssistant() {
     document.getElementById('voice-fab')?.addEventListener('click', openVoiceModal);
     document.getElementById('voice-modal-close')?.addEventListener('click', closeVoiceModal);
-    document.getElementById('voice-start-btn')?.addEventListener('click', runVoiceAssistant);
+    document.getElementById('voice-start-btn')?.addEventListener('click', handleVoiceButtonClick);
+
+    // Register status updates from Whisper engine
+    Speech.onStatus((status) => {
+      const statusEl = document.getElementById('voice-status');
+      const modal = document.getElementById('voice-modal');
+      const btnText = document.getElementById('voice-btn-text');
+      if (!statusEl) return;
+      if (status === 'recording') {
+        _voiceRecording = true;
+        modal?.classList.add('listening');
+        statusEl.textContent = '🔴 ' + (I18n.t('voice_listening') || 'Listening...');
+        if (btnText) btnText.textContent = I18n.t('voice_stop') || 'Stop';
+      } else if (status === 'processing') {
+        _voiceRecording = false;
+        modal?.classList.remove('listening');
+        statusEl.textContent = '⚙️ ' + (I18n.t('voice_processing') || 'Processing...');
+        if (btnText) btnText.textContent = I18n.t('voice_start') || 'Start';
+      } else if (status === 'ready') {
+        _voiceRecording = false;
+        if (btnText) btnText.textContent = I18n.t('voice_start') || 'Start';
+      } else if (status === 'error') {
+        _voiceRecording = false;
+        modal?.classList.remove('listening');
+        statusEl.textContent = I18n.t('voice_tap_to_speak') || 'Tap to speak';
+        if (btnText) btnText.textContent = I18n.t('voice_start') || 'Start';
+      }
+    });
+  }
+
+  /** Update Whisper model download progress in voice modal */
+  function updateWhisperStatus(info) {
+    const el = document.getElementById('whisper-model-status');
+    if (!el) return;
+    if (info.type === 'MODEL_LOADING') {
+      const pct = info.progress || 0;
+      el.innerHTML = `
+        <div class="whisper-download">
+          <div class="whisper-download__label">🧠 Downloading Whisper AI model… ${pct}%</div>
+          <div class="whisper-download__bar"><div class="whisper-download__fill" style="width:${pct}%"></div></div>
+          <div class="whisper-download__sub">One-time download (~40MB). Required for offline voice recognition.</div>
+        </div>`;
+      el.classList.remove('hidden');
+    } else if (info.type === 'MODEL_READY') {
+      el.innerHTML = `<div class="whisper-ready">✅ Whisper AI ready — offline voice works!</div>`;
+      setTimeout(() => el.classList.add('hidden'), 3000);
+    } else if (info.type === 'ERROR') {
+      el.innerHTML = `<div class="whisper-error">⚠️ Whisper model failed. Using online mode as fallback.</div>`;
+      setTimeout(() => el.classList.add('hidden'), 4000);
+    }
   }
 
   function openVoiceModal() {
-    document.getElementById('voice-modal')?.classList.remove('hidden');
-    document.getElementById('voice-status').textContent = I18n.t('voice_tap_to_speak');
-    document.getElementById('voice-transcript').classList.remove('visible');
-    document.getElementById('voice-response').classList.remove('visible');
-    document.getElementById('voice-btn-text').textContent = I18n.t('voice_start');
+    const modal = document.getElementById('voice-modal');
+    modal?.classList.remove('hidden');
+    // Reset UI
+    const statusEl = document.getElementById('voice-status');
+    if (statusEl) statusEl.textContent = I18n.t('voice_tap_to_speak');
+    document.getElementById('voice-transcript')?.classList.remove('visible');
+    document.getElementById('voice-response')?.classList.remove('visible');
+    const btnText = document.getElementById('voice-btn-text');
+    if (btnText) btnText.textContent = I18n.t('voice_start');
+
+    // Show engine info badge
+    const badge = document.getElementById('voice-engine-badge');
+    if (badge) {
+      if (Speech.whisperAvailable) {
+        badge.textContent = '🎙️ Whisper AI (Offline)';
+        badge.className = 'voice-engine-badge voice-engine-badge--whisper';
+      } else if (Speech.browserSRAvailable) {
+        badge.textContent = '🌐 Browser Voice (Online)';
+        badge.className = 'voice-engine-badge voice-engine-badge--browser';
+      } else {
+        badge.textContent = '❌ No voice input available';
+        badge.className = 'voice-engine-badge voice-engine-badge--none';
+      }
+      badge.classList.remove('hidden');
+    }
   }
 
   function closeVoiceModal() {
     document.getElementById('voice-modal')?.classList.add('hidden');
+    // Stop any in-progress listening
+    if (_voiceListenHandle) {
+      _voiceListenHandle.stop();
+      _voiceListenHandle = null;
+    }
     Speech.stopListening();
     Speech.stopSpeaking();
+    _voiceRecording = false;
     document.getElementById('voice-modal')?.classList.remove('listening');
+  }
+
+  /** Toggle record/stop on button click */
+  async function handleVoiceButtonClick() {
+    if (_voiceRecording) {
+      // User tapped Stop — trigger Whisper stop → auto-transcribes asynchronously
+      if (_voiceListenHandle) {
+        _voiceListenHandle.stop();
+        _voiceListenHandle = null;
+        // UI updates come via Speech.onStatus callback ('processing' → 'ready')
+      }
+      return;
+    }
+    await runVoiceAssistant();
   }
 
   async function runVoiceAssistant() {
     if (!Speech.isSupported()) {
-      Notifications.showToast(I18n.t('voice_not_supported'), 'warning');
+      Notifications.showToast(I18n.t('voice_not_supported') || 'Voice not supported', 'warning');
       return;
     }
-    if (!navigator.onLine) {
-      Notifications.showToast(I18n.t('voice_need_internet'), 'warning');
-      return;
-    }
+    // Whisper works OFFLINE — no internet check needed for recording.
+    // Gemini AI response needs internet; mock fallback handles offline case.
 
-    const modal = document.getElementById('voice-modal');
-    const statusEl = document.getElementById('voice-status');
+    const modal       = document.getElementById('voice-modal');
     const transcriptEl = document.getElementById('voice-transcript');
-    const responseEl = document.getElementById('voice-response');
-    const btnText = document.getElementById('voice-btn-text');
+    const responseEl   = document.getElementById('voice-response');
 
-    modal.classList.add('listening');
-    statusEl.textContent = I18n.t('voice_listening');
-    btnText.textContent = I18n.t('voice_stop');
-    transcriptEl.classList.remove('visible');
-    responseEl.classList.remove('visible');
+    transcriptEl?.classList.remove('visible');
+    responseEl?.classList.remove('visible');
 
     Speech.setWeatherContext(weatherData);
 
+    // startAssistant() now returns { promise, stop }
+    const assistantHandle = Speech.startAssistant();
+    _voiceListenHandle = assistantHandle; // allow Stop button to cancel
+
     try {
-      const result = await Speech.startAssistant();
-      modal.classList.remove('listening');
-      statusEl.textContent = I18n.t('voice_tap_to_speak');
-      btnText.textContent = I18n.t('voice_start');
+      const result = await assistantHandle.promise;
+      _voiceListenHandle = null;
+      _voiceRecording    = false;
+      modal?.classList.remove('listening');
+
+      const statusEl = document.getElementById('voice-status');
+      const btnText  = document.getElementById('voice-btn-text');
+      if (statusEl) statusEl.textContent = I18n.t('voice_tap_to_speak');
+      if (btnText)  btnText.textContent  = I18n.t('voice_start');
 
       if (result.query) {
         transcriptEl.textContent = '🗣️ ' + result.query;
@@ -1367,9 +1464,13 @@ const App = (() => {
         addVoiceChatItem(result.query, result.response);
       }
     } catch (e) {
-      modal.classList.remove('listening');
-      statusEl.textContent = I18n.t('voice_tap_to_speak');
-      btnText.textContent = I18n.t('voice_start');
+      _voiceListenHandle = null;
+      _voiceRecording    = false;
+      modal?.classList.remove('listening');
+      const statusEl = document.getElementById('voice-status');
+      const btnText  = document.getElementById('voice-btn-text');
+      if (statusEl) statusEl.textContent = I18n.t('voice_tap_to_speak');
+      if (btnText)  btnText.textContent  = I18n.t('voice_start');
     }
   }
 

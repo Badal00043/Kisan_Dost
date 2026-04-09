@@ -52,6 +52,7 @@
         </div>
         <div class="auth-error hidden" id="login-error"></div>
         <button type="submit" class="auth-submit">Login →</button>
+        <button type="button" class="auth-submit" id="demo-mode-btn" style="background: linear-gradient(135deg, #F4A261, #E76F51); margin-top: 10px;">Demo Access</button>
       </form>
 
       <!-- Register Form -->
@@ -79,108 +80,7 @@
   <!-- ========== APP CONTAINER ========== -->
   <div class="app-container">
 
-  <!-- ========== LANDING PAGE ========== -->
-  <div class="landing" id="landing">
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-      <div class="hero__illustration">
-        <img src="Utils/Kisan Dost.png" alt="Kisan Dost Logo" class="hero__logo-img">
-      </div>
-      <div class="hero__badge">AI-Powered Smart Farming</div>
-      <h1 class="hero__title">Start Farming<br/><span>Smarter</span></h1>
-      <p class="hero__subtitle">AI crop disease detection, weather intelligence, voice assistant & government schemes — all in your pocket, even without internet.</p>
-      <button class="hero__cta" id="landing-cta">
-        Get Started
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <div class="hero__scroll">
-        <span>Scroll to explore</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-    </section>
 
-    <!-- Feature Bento Grid -->
-    <section class="features" id="features">
-      <div class="features__label">Why Choose Kisan Dost?</div>
-      <h2 class="features__title">Everything You Need</h2>
-      <div class="bento-grid">
-        <div class="bento-card">
-          <div class="bento-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-          </div>
-          <div class="bento-card__title">Weather Intelligence</div>
-          <div class="bento-card__desc">5-day forecasts with farming-specific insights</div>
-        </div>
-        <div class="bento-card">
-          <div class="bento-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          </div>
-          <div class="bento-card__title">Gemini AI Advisory</div>
-          <div class="bento-card__desc">Smart daily insights powered by Google AI</div>
-        </div>
-        <div class="bento-card">
-          <div class="bento-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </div>
-          <div class="bento-card__title">Crop Disease Scanner</div>
-          <div class="bento-card__desc">AI-powered plant disease detection via camera</div>
-        </div>
-        <div class="bento-card">
-          <div class="bento-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
-          </div>
-          <div class="bento-card__title">Voice Assistant</div>
-          <div class="bento-card__desc">Ask anything about farming in Hindi</div>
-        </div>
-        <div class="bento-card bento-card--wide">
-          <div class="bento-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <div>
-            <div class="bento-card__title">Multilingual + Offline</div>
-            <div class="bento-card__desc">Hindi, Marathi, Bangla & English — works even without internet.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- How It Works -->
-    <section class="how-it-works" id="how-it-works">
-      <h2 class="how-it-works__title">How It Works</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step__number">1</div>
-          <div class="step__content">
-            <div class="step__title">Choose Your Language</div>
-            <div class="step__desc">Select Hindi, Marathi, Bangla or English — the entire app adapts instantly.</div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step__number">2</div>
-          <div class="step__content">
-            <div class="step__title">Set Your Location</div>
-            <div class="step__desc">Use GPS or enter your village/city to get hyper-local weather data.</div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step__number">3</div>
-          <div class="step__content">
-            <div class="step__title">Get AI-Powered Insights</div>
-            <div class="step__desc">Receive daily AI farming insights, scan crop diseases, and talk to your voice assistant — even offline.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer CTA -->
-    <div class="landing-footer">
-      <p class="landing-footer__text">Join thousands of smart farmers across India.</p>
-      <button class="hero__cta" id="landing-cta-bottom">
-        Start Farming Smarter
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
-  </div>
 
     <!-- ---- Header ---- -->
     <header class="app-header" id="app-header">
@@ -380,6 +280,13 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
+
+      <!-- Engine Badge -->
+      <div id="voice-engine-badge" class="voice-engine-badge hidden"></div>
+
+      <!-- Whisper model download status -->
+      <div id="whisper-model-status" class="hidden"></div>
+
       <div class="voice-modal__animation" id="voice-animation">
         <div class="voice-wave"></div>
         <div class="voice-wave"></div>
@@ -396,6 +303,9 @@
       <div class="voice-modal__status" id="voice-status">Tap to speak</div>
       <div class="voice-modal__transcript" id="voice-transcript"></div>
       <div class="voice-modal__response" id="voice-response"></div>
+      <div class="voice-modal__hint" id="voice-modal-hint">
+        🎙️ Tap <strong>Start</strong> &rarr; speak your question &rarr; tap <strong>Stop</strong>
+      </div>
       <button class="voice-modal__btn" id="voice-start-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
           <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>

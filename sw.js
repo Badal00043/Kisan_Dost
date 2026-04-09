@@ -3,7 +3,7 @@
    Offline-first caching, background sync, TTL enforcement
    ============================================================ */
 
-const CACHE_NAME = 'kisan-dost-v4';
+const CACHE_NAME = 'kisan-dost-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -16,6 +16,7 @@ const STATIC_ASSETS = [
   '/js/notifications.js',
   '/js/gemini.js',
   '/js/speech.js',
+  '/js/whisper-worker.js',
   '/js/crop-disease.js',
   '/js/app.js',
   '/lang/en.json',
@@ -70,6 +71,13 @@ self.addEventListener('fetch', (event) => {
 
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
+
+  // HuggingFace model CDN — let browser cache handle it natively (opaque response ok)
+  // Whisper ONNX model files are large; we allow browser to cache them independently.
+  if (url.hostname.includes('huggingface.co') || url.hostname.includes('cdn.jsdelivr.net')) {
+    // Just let it pass through, browser's built-in cache will handle model files
+    return;
+  }
 
   // API requests (OpenWeatherMap)
   if (url.hostname.includes('openweathermap.org')) {

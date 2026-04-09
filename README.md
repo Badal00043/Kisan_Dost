@@ -19,9 +19,9 @@
 
 ## 📋 Overview
 
-**Kisan Dost** is a lightweight, offline-first Progressive Web App (PWA) designed for Indian farmers. It combines real-time weather data, Google Gemini AI-powered crop advisory, voice assistance, and AI crop disease detection — all accessible in **Hindi, Marathi, Bangla, and English**.
+**Kisan Dost** is a lightweight, offline-first Progressive Web App (PWA) designed for Indian farmers. It combines real-time weather data, Google Gemini AI-powered crop advisory, **offline voice assistance powered by WebML**, and a **custom FastAPI Crop Disease backend** — all accessible in **Hindi, Marathi, Bangla, and English**.
 
-> 🎯 Built for low-bandwidth, rural environments — works even without internet.
+> 🎯 Built for low-bandwidth, rural environments — features an Auth-First flow and works seamlessly offline.
 
 ---
 
@@ -39,18 +39,18 @@
 - Returns specific, practical farming advice (e.g., *"Based on 32°C temp and low humidity, increase water by 20% today"*)
 - Smart caching to minimize API calls
 
-### 🎙️ Voice Assistant
-- **Hindi/Marathi/Bangla/English** voice input via Web Speech API
-- Sends spoken queries to Gemini AI for intelligent responses
-- **Text-to-Speech** reads AI responses aloud
+### 🎙️ Offline Voice Assistant
+- **Hindi/Marathi/Bangla/English** voice input via **Transformers.js (Offline Whisper Model)**
+- Processes speech entirely in-browser, zero data leaves your device
+- Sends transcribed queries to AI and reads responses aloud
 - Full conversation history in the AI tab
-- Floating Action Button (FAB) for quick access from any screen
 
-### 🌿 AI Crop Disease Scanner
+### 🌿 AI Crop Disease Scanner (FastAPI Backend)
 - **Camera capture** or **photo upload** for plant disease detection
-- Powered by **Gemini Vision AI** for image analysis
+- Deep integration with a dedicated **FastAPI Python Backend**
+- Uses **EfficientNetB4** for precise computer-vision crop analysis
 - Returns: crop identification, disease name, severity, symptoms, treatment (organic + chemical), and prevention tips
-- Confidence score for each analysis
+- Clean "Diagnostic Card" with confidence scores
 
 ### 🏛️ Government Schemes
 - PM-KISAN, PMFBY, KCC information
@@ -78,10 +78,11 @@
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | Vanilla HTML5, CSS3, JavaScript (ES6+) |
-| **AI Engine** | Google Gemini 2.5 Flash API |
-| **Weather API** | OpenWeatherMap |
-| **Speech** | Web Speech API (Recognition + Synthesis) |
+| **Frontend** | Vanilla HTML5, CSS3, JavaScript (ES6+), PWA |
+| **Backend** | FastAPI, Python, Uvicorn |
+| **AI (Chat)** | Google Gemini 2.5 Flash API |
+| **AI (Computer Vision)**| TensorFlow, EfficientNetB4 |
+| **Speech (STT)** | Transformers.js (Xenova/whisper-tiny) |
 | **Storage** | IndexedDB + localStorage |
 | **PWA** | Service Worker, Web App Manifest |
 | **Fonts** | Google Fonts (Inter) |
@@ -93,29 +94,25 @@
 
 ```
 Kisan_Dost/
-├── index.html              # Main SPA shell
+├── index.html              # Main Auth-First SPA shell
 ├── manifest.json           # PWA manifest
-├── sw.js                   # Service Worker
+├── backend/
+│   ├── app.py              # FastAPI Web Server
+│   ├── model.py            # TF/Keras model inference
+│   └── requirements.txt    # Python dependencies
 ├── css/
-│   └── styles.css          # Complete design system
+│   └── styles.css          # Glassmorphism design system
 ├── js/
+│   ├── auth.js             # Authentication logic
 │   ├── db.js               # IndexedDB wrapper
 │   ├── i18n.js             # Internationalization
 │   ├── weather.js          # OpenWeatherMap integration
-│   ├── advisory.js         # Rule-based weather advisories
 │   ├── gemini.js           # Gemini AI service
-│   ├── speech.js           # Voice assistant (STT + TTS)
-│   ├── crop-disease.js     # Camera/upload crop scanner
-│   ├── notifications.js    # Toast & push notifications
-│   └── app.js              # Main app controller & router
+│   ├── speech.js           # Whisper Offline STT + TTS
+│   ├── crop-disease.js     # Camera scanner backend bridge
+│   └── app.js              # Main app controller
 ├── lang/
-│   ├── en.json             # English translations
-│   ├── hi.json             # Hindi translations
-│   ├── mr.json             # Marathi translations
-│   └── bn.json             # Bengali translations
-├── data/
-│   ├── schemes.json        # Government schemes data
-│   └── profile.json        # Demo farmer profile
+│   ├── en.json, hi.json... # Translations
 └── Utils/
     └── Kisan Dost.png      # App logo
 ```
@@ -135,11 +132,16 @@ Kisan_Dost/
 git clone https://github.com/Badal00043/Kisan_Dost.git
 cd Kisan_Dost
 
-# Serve with any static server
-npx serve . -l 3000
+# 1. Start the Backend
+cd backend
+pip install -r requirements.txt
+python -m uvicorn app:app --host 0.0.0.0 --port 8000
 
-# Open in browser
-# http://localhost:3000
+# 2. Serve the Frontend
+cd ..
+python -m http.server 3000
+
+# Open in browser: http://localhost:3000
 ```
 
 ### API Keys
