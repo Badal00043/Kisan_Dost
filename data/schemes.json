@@ -1,0 +1,117 @@
+[
+  {
+    "id": "scheme-pmkisan",
+    "badge": "scheme",
+    "title": {
+      "en": "PM-KISAN Samman Nidhi",
+      "hi": "पीएम-किसान सम्मान निधि",
+      "mr": "पीएम-किसान सन्मान निधी",
+      "bn": "পিএম-কিষাণ সম্মান নিধি"
+    },
+    "description": {
+      "en": "₹6,000 per year in 3 installments to all landholding farmers. Direct bank transfer by Government of India.",
+      "hi": "सभी भूमिधारक किसानों को 3 किस्तों में प्रति वर्ष ₹6,000। भारत सरकार द्वारा सीधे बैंक ट्रांसफर।",
+      "mr": "सर्व भूधारक शेतकऱ्यांना 3 हप्त्यांमध्ये वार्षिक ₹6,000. भारत सरकारद्वारे थेट बँक हस्तांतरण.",
+      "bn": "সকল জমির মালিক কৃষককে ৩ কিস্তিতে বছরে ₹৬,০০০। ভারত সরকার কর্তৃক সরাসরি ব্যাংক ট্রান্সফার।"
+    },
+    "eligibility": {
+      "en": "All farmer families with cultivable land holdings.",
+      "hi": "खेती योग्य भूमि वाले सभी किसान परिवार।",
+      "mr": "शेती योग्य जमीन असलेली सर्व शेतकरी कुटुंबे.",
+      "bn": "চাষযোগ্য জমির মালিক সকল কৃষক পরিবার।"
+    },
+    "link": "https://pmkisan.gov.in"
+  },
+  {
+    "id": "scheme-pmfby",
+    "badge": "scheme",
+    "title": {
+      "en": "PM Fasal Bima Yojana (PMFBY)",
+      "hi": "प्रधानमंत्री फसल बीमा योजना (PMFBY)",
+      "mr": "प्रधानमंत्री पीक विमा योजना (PMFBY)",
+      "bn": "প্রধানমন্ত্রী ফসল বীমা যোজনা (PMFBY)"
+    },
+    "description": {
+      "en": "Crop insurance at low premium — 2% for Kharif, 1.5% for Rabi. Covers natural calamities, pests, and diseases.",
+      "hi": "कम प्रीमियम पर फसल बीमा — खरीफ के लिए 2%, रबी के लिए 1.5%। प्राकृतिक आपदाओं, कीटों और रोगों को कवर करता है।",
+      "mr": "कमी प्रीमियमवर पीक विमा — खरीप 2%, रबी 1.5%. नैसर्गिक आपत्ती, कीटक आणि रोग कव्हर करते.",
+      "bn": "কম প্রিমিয়ামে ফসল বীমা — খারিফ ২%, রবি ১.৫%। প্রাকৃতিক দুর্যোগ, কীটপতঙ্গ ও রোগ কভার করে।"
+    },
+    "eligibility": {
+      "en": "All farmers growing notified crops in notified areas.",
+      "hi": "अधिसूचित क्षेत्रों में अधिसूचित फसलें उगाने वाले सभी किसान।",
+      "mr": "अधिसूचित भागांमध्ये अधिसूचित पिके घेणारे सर्व शेतकरी.",
+      "bn": "বিজ্ঞাপিত এলাকায় বিজ্ঞাপিত ফসল চাষকারী সকল কৃষক।"
+    },
+    "link": "https://pmfby.gov.in"
+  },
+  {
+    "id": "scheme-kisancreditcard",
+    "badge": "scheme",
+    "title": {
+      "en": "Kisan Credit Card (KCC)",
+      "hi": "किसान क्रेडिट कार्ड (KCC)",
+      "mr": "किसान क्रेडिट कार्ड (KCC)",
+      "bn": "কিষাণ ক্রেডিট কার্ড (KCC)"
+    },
+    "description": {
+      "en": "Short-term credit at low interest (4%) for crop production, post-harvest needs, and farm maintenance.",
+      "hi": "फसल उत्पादन, कटाई बाद की जरूरतों और खेत रखरखाव के लिए कम ब्याज (4%) पर अल्पकालिक ऋण।",
+      "mr": "पीक उत्पादन, काढणीनंतरच्या गरजा आणि शेतीच्या देखभालीसाठी कमी व्याजाने (4%) अल्पकालीन कर्ज.",
+      "bn": "ফসল উৎপাদন, ফসল কাটার পরের প্রয়োজন ও খামার রক্ষণাবেক্ষণের জন্য কম সুদে (৪%) স্বল্পমেয়াদী ঋণ।"
+    },
+    "eligibility": {
+      "en": "Individual farmers, tenant farmers, and sharecroppers.",
+      "hi": "व्यक्तिगत किसान, किरायेदार किसान और बटाईदार।",
+      "mr": "वैयक्तिक शेतकरी, भाडेकरू शेतकरी आणि वाटेकरी.",
+      "bn": "স্বতন্ত্র কৃষক, ভাড়াটিয়া কৃষক ও ভাগচাষি।"
+    },
+    "link": "https://www.nabard.org"
+  },
+  {
+    "id": "scheme-soilhealth",
+    "badge": "scheme",
+    "title": {
+      "en": "Soil Health Card Scheme",
+      "hi": "मृदा स्वास्थ्य कार्ड योजना",
+      "mr": "मृदा आरोग्य कार्ड योजना",
+      "bn": "মৃত্তিকা স্বাস্থ্য কার্ড প্রকল্প"
+    },
+    "description": {
+      "en": "Free soil testing and health card with nutrient status and fertilizer recommendations for your farm.",
+      "hi": "आपके खेत के लिए पोषक तत्व स्थिति और उर्वरक सिफारिशों के साथ मुफ्त मृदा परीक्षण और स्वास्थ्य कार्ड।",
+      "mr": "तुमच्या शेतासाठी पोषक स्थिती आणि खत शिफारशींसह मोफत मृदा चाचणी आणि आरोग्य कार्ड.",
+      "bn": "আপনার খামারের জন্য পুষ্টি অবস্থা ও সার সুপারিশ সহ বিনামূল্যে মাটি পরীক্ষা ও স্বাস্থ্য কার্ড।"
+    },
+    "eligibility": {
+      "en": "All farmers across India.",
+      "hi": "भारत भर के सभी किसान।",
+      "mr": "संपूर्ण भारतातील सर्व शेतकरी.",
+      "bn": "সমগ্র ভারতের সকল কৃষক।"
+    },
+    "link": "https://soilhealth.dac.gov.in"
+  },
+  {
+    "id": "scheme-enam",
+    "badge": "scheme",
+    "title": {
+      "en": "e-NAM (National Agriculture Market)",
+      "hi": "ई-नाम (राष्ट्रीय कृषि बाजार)",
+      "mr": "ई-नाम (राष्ट्रीय कृषी बाजार)",
+      "bn": "ই-ন্যাম (জাতীয় কৃষি বাজার)"
+    },
+    "description": {
+      "en": "Online trading platform for agricultural commodities. Get better prices by selling to buyers across the country.",
+      "hi": "कृषि उत्पादों के लिए ऑनलाइन ट्रेडिंग प्लेटफॉर्म। देश भर के खरीदारों को बेचकर बेहतर कीमत पाएं।",
+      "mr": "कृषी उत्पादनांसाठी ऑनलाइन ट्रेडिंग प्लॅटफॉर्म. देशभरातील खरेदीदारांना विकून चांगली किंमत मिळवा.",
+      "bn": "কৃষি পণ্যের জন্য অনলাইন ট্রেডিং প্ল্যাটফর্ম। দেশজুড়ে ক্রেতাদের কাছে বিক্রি করে ভালো দাম পান।"
+    },
+    "eligibility": {
+      "en": "All farmers, traders, and FPOs registered on the platform.",
+      "hi": "प्लेटफॉर्म पर पंजीकृत सभी किसान, व्यापारी और FPO।",
+      "mr": "प्लॅटफॉर्मवर नोंदणीकृत सर्व शेतकरी, व्यापारी आणि FPO.",
+      "bn": "প্ল্যাটফর্মে নিবন্ধিত সকল কৃষক, ব্যবসায়ী ও FPO।"
+    },
+    "link": "https://enam.gov.in"
+  }
+]

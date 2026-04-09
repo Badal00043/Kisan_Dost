@@ -1,0 +1,24 @@
+{
+  "id": "user-profile",
+  "name": "Ramesh",
+  "phone": "+91 9876543210",
+  "preferredLanguage": "Hindi",
+  "farm": {
+    "village": "Wardha",
+    "district": "Wardha",
+    "state": "Maharashtra",
+    "size": "2 Acres",
+    "soilType": "Black Soil",
+    "irrigationType": "Rain-fed"
+  },
+  "crop": {
+    "name": "Cotton",
+    "stage": "Growing Stage",
+    "sowingDate": "2026-06-10",
+    "lastIrrigation": "2026-07-01"
+  },
+  "settings": {
+    "voiceAssistant": true,
+    "offlineAccess": true
+  }
+}
